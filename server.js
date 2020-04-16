@@ -1,12 +1,12 @@
 const db = require('./models/index');
 const OpenTok = require('opentok');
 const Nexmo = require('nexmo');
-require('dotenv').config();
 const puppeteer = require('puppeteer');
 const http = require('http');
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 const path = require('path');
+require('dotenv').config();
 
 const opentok = new OpenTok(
     process.env.OPENTOK_API_KEY, 
@@ -18,9 +18,10 @@ const nexmo = new Nexmo({
     apiSecret: process.env.NEXMO_API_SECRET
   })
 
-createSession().then((session) => {
-  //get last session id
-});
+// Triggers the whole process of creating a session, adding the the session id to the database.
+// Opens a headless mode for the publisher view.
+// Will send a text message.
+createSession();
 
 async function createSession() {
     let session = opentok.createSession({ mediaMode: "routed" }, function(error, session) {
@@ -40,10 +41,6 @@ async function createSessionEntry(sessionId) {
     db.Session.create({ sessionId: sessionId, active: true }).then(sessionRow => {
         return sessionRow.id;
       });
-}
-
-function generateToken(opentok) {
-    return opentok.generateToken(sessionId);
 }
 
 // function sendSMS() {
