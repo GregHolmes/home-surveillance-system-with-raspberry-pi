@@ -2,50 +2,21 @@
 var apiKey;
 var sessionId;
 var token;
+var isPublisher = false;
+var isSubscriber = false;
 
-getDetails();
-
-// Handling all of our errors here by alerting them
-function handleError(error) {
-    if (error) {
-      alert(error.message);
-    }
-}
-
-function initializeSession() {
-  var session = OT.initSession(apiKey, sessionId);
-
-  // Subscribe to a newly created stream
-  session.on('streamCreated', function(event) {
-    session.subscribe(event.stream, 'subscriber', {
-      insertMode: 'append',
-      width: '100%',
-      height: '100%'
-    }, handleError);
-  });
-
-  // Create a publisher
-  var publisher = OT.initPublisher('publisher', {
-    insertMode: 'append',
-    width: '100%',
-    height: '100%'
-  }, handleError);
-
-  // Connect to the session
-  session.connect(token, function(error) {
-    // If the connection is successful, publish to the session
-    if (error) {
-      handleError(error);
-    } else {
-      session.publish(publisher, handleError);
-    }
-  });
-}
-
-async function getDetails() {
-  const url = 'http://192.168.1.234:3000/get-details';
+async function getDetails(publisher, subscriber, ipAddress) {
+  const url = "https://" + ipAddress + ":3000/get-details";
   let request = await fetch(url);
   let response = await request.json();
+  
+  if (publisher == true) {
+    isPublisher = true;
+  } 
+
+  if (subscriber == true) {
+    isSubscriber = true;
+  }
 
   setDetails(response);
 }
@@ -56,4 +27,45 @@ function setDetails(details) {
   token = details.token;
 
   initializeSession();
+}
+
+function initializeSession() {
+  var session = OT.initSession(apiKey, sessionId);
+
+  // Subscribe to a newly created stream
+  if (isSubscriber == true) {
+    session.on('streamCreated', function(event) {
+      session.subscribe(event.stream, 'subscriber', {
+        insertMode: 'append',
+        width: '100%',
+        height: '100%'
+      }, handleError);
+    });
+  }
+  
+  if (isPublisher == true) {
+    // Create a publisher
+    var publisher = OT.initPublisher('publisher', {
+      insertMode: 'append',
+      width: '100%',
+      height: '100%'
+    }, handleError);
+  }
+
+  // Connect to the session
+  session.connect(token, function(error) {
+    // If the connection is successful, publish to the session
+    if (error) {
+      handleError(error);
+    } else if (isPublisher == true) {
+      session.publish(publisher, handleError);
+    }
+  });
+}
+
+// Handling all of our errors here by alerting them
+function handleError(error) {
+  if (error) {
+    alert(error.message);
+  }
 }

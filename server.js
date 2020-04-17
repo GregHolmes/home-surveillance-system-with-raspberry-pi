@@ -2,10 +2,11 @@ const db = require('./models/index');
 const OpenTok = require('opentok');
 const Nexmo = require('nexmo');
 const puppeteer = require('puppeteer');
-const http = require('http');
 const express = require('express');
 const app = express();
 const path = require('path');
+const https = require('https');
+const fs = require('fs');
 require('dotenv').config();
 
 const opentok = new OpenTok(
@@ -66,6 +67,10 @@ async function startPublish() {
 
   app.use(express.static(__dirname + '/public'));
   app.get('/serve', function (req, res) {
+    res.sendFile(path.join(__dirname+'/public/server.html'));
+  });
+
+  app.get('/client', function (req, res) {
     res.sendFile(path.join(__dirname+'/public/client.html'));
   });
 
@@ -83,11 +88,30 @@ async function startPublish() {
     }));
   });
 
-  app.listen(port, () => console.log(`Example app listening at http://192.168.1.234:${port}`));
+  // app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+  https.createServer({
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+    passphrase: 'testpass'
+  }, app)
+  .listen(port);
 
-  const browser = await puppeteer.launch();
+
+  const browser = await puppeteer.launch({
+    // headless: true,
+    ignoreHTTPSErrors: true,
+    args: [
+      '--ignore-certificate-errors',
+      '--use-fake-ui-for-media-stream'
+    ]
+  });
   const page = await browser.newPage();
-  await page.goto('http://192.168.1.234:3000/serve');
+
+  const context = browser.defaultBrowserContext();
+  await context.overridePermissions('https://localhost:3000', ['camera', 'microphone']);
+
+  await page.goto('https://localhost:3000/serve');
+
   await page.screenshot({path: 'example.png'});
 }
 
