@@ -10,7 +10,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const opentok = new OpenTok(
-    process.env.OPENTOK_API_KEY, 
+    process.env.OPENTOK_API_KEY,
     process.env.OPENTOK_API_SECRET
 );
 
@@ -28,7 +28,7 @@ async function createSession() {
     let session = opentok.createSession({ mediaMode: "routed" }, function(error, session) {
         if (error) {
           console.log("Error creating session:", error);
-          
+
           return null;
         } else {
           createSessionEntry(session.sessionId);
@@ -75,13 +75,13 @@ async function startPublish() {
   });
 
   app.get('/get-details', function (req, res) {
-    db.Session.findAll({ 
+    db.Session.findAll({
       limit: 1,
       where: {
         active: true
       },
-      order: [[ 'createdAt', 'DESC' ]] 
-    }).then(entries => res.json({ 
+      order: [[ 'createdAt', 'DESC' ]]
+    }).then(entries => res.json({
       "sessionId": entries[0].sessionId,
       "token": opentok.generateToken(entries[0].sessionId),
       "apiKey": process.env.OPENTOK_API_KEY
@@ -96,9 +96,9 @@ async function startPublish() {
   }, app)
   .listen(port);
 
-
   const browser = await puppeteer.launch({
-    // headless: true,
+    headless: true,
+    executablePath: 'chromium-browser',
     ignoreHTTPSErrors: true,
     args: [
       '--ignore-certificate-errors',
@@ -114,5 +114,3 @@ async function startPublish() {
 
   await page.screenshot({path: 'example.png'});
 }
-
-   
