@@ -10,6 +10,7 @@ const fs = require('fs');
 require('dotenv').config();
 const gpio = require('onoff').Gpio;
 const pir = new gpio(18, 'in', 'both');
+const ngrok = require('ngrok');
 
 const opentok = new OpenTok(
     process.env.OPENTOK_API_KEY,
@@ -27,6 +28,8 @@ let canCreateSession = true;
 // Will send a text message.
 console.log('here');
 startServer();
+connectNgrok();
+
 pir.watch(function(err, value) {
     console.log('oh?');
     if (value == 1 && canCreateSession == true) {
@@ -56,6 +59,17 @@ async function createSessionEntry(sessionId) {
       });
 }
 
+async function connectNgrok() {
+  const url = await ngrok.connect({
+    proto: 'https', // http|tcp|tls, defaults to http
+    addr: 3000, // port or network address, defaults to 80
+    auth: 'user:pwd', // http basic authentication for tunnel
+    subdomain: 'gregdev', // reserved tunnel name https://alex.ngrok.io
+    region: 'eu', // one of ngrok regions (us, eu, au, ap), defaults to us
+    configPath: '~/ngrok2/ngrok.yml', // custom path for ngrok config file
+    onStatusChange: status => { console.log(status)}, // 'closed' - connection is lost, 'connected' - reconnected
+  });
+}
 // function sendSMS() {
 //     const from = process.env.NEXMO_BRAND_NAME;
 //     const to = process.env.TO_NUMBER;
