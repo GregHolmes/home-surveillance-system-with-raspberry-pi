@@ -26,9 +26,7 @@ let canCreateSession = true;
 // Triggers the whole process of creating a session, adding the the session id to the database.
 // Opens a headless mode for the publisher view.
 // Will send a text message.
-console.log('here');
 startServer();
-connectNgrok();
 
 pir.watch(function(err, value) {
     console.log('oh?');
@@ -60,16 +58,20 @@ async function createSessionEntry(sessionId) {
 }
 
 async function connectNgrok() {
+    console.log('testing');
   const url = await ngrok.connect({
-    proto: 'https', // http|tcp|tls, defaults to http
-    addr: 3000, // port or network address, defaults to 80
-    auth: 'user:pwd', // http basic authentication for tunnel
+    proto: 'http', // http|tcp|tls, defaults to http
+    addr: 'https://localhost:3000', // port or network address, defaults to 80
     subdomain: 'gregdev', // reserved tunnel name https://alex.ngrok.io
     region: 'eu', // one of ngrok regions (us, eu, au, ap), defaults to us
-    configPath: '~/ngrok2/ngrok.yml', // custom path for ngrok config file
+    configPath: '/home/pi/.ngrok2/ngrok.yml', // custom path for ngrok config file
     onStatusChange: status => { console.log(status)}, // 'closed' - connection is lost, 'connected' - reconnected
+    onLogEvent: data => { console.log(data) }
   });
+    console.log(url);
+    console.log('endtesting');
 }
+
 // function sendSMS() {
 //     const from = process.env.NEXMO_BRAND_NAME;
 //     const to = process.env.TO_NUMBER;
@@ -113,12 +115,19 @@ async function startServer() {
     }));
   });
 
-  https.createServer({
+  const httpServer = https.createServer({
     key: fs.readFileSync('./key.pem'),
     cert: fs.readFileSync('./cert.pem'),
     passphrase: 'testpass'
-  }, app)
-  .listen(port);
+  }, app);
+
+  httpServer.listen(port, (err) => {
+    if (err) return console.log(`Something bad happened: ${err}`);
+    console.log(`Node.js server listening on ${port}`);
+
+    connectNgrok();
+
+  });
 }
 
 async function startPublish() {
