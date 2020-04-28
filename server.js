@@ -121,7 +121,11 @@ async function startServer() {
     passphrase: 'testpass'
   }, app);
 
-  httpServer.listen(() => {
+  httpServer.listen(port, (err) => {
+    if (err) {
+      return console.log(`Unable to start server: ${err}`);
+    }
+
     connectNgrok();
   });
 }
