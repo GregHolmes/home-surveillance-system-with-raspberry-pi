@@ -8,6 +8,8 @@ const path = require('path');
 const https = require('https');
 const fs = require('fs');
 require('dotenv').config();
+const gpio = require('onoff').Gpio;
+const pir = new gpio(18, 'in', 'both');
 
 const opentok = new OpenTok(
     process.env.OPENTOK_API_KEY,
@@ -19,10 +21,20 @@ const nexmo = new Nexmo({
     apiSecret: process.env.NEXMO_API_SECRET
   })
 
+let canCreateSession = true;
 // Triggers the whole process of creating a session, adding the the session id to the database.
 // Opens a headless mode for the publisher view.
 // Will send a text message.
-createSession();
+console.log('here');
+startServer();
+pir.watch(function(err, value) {
+    console.log('oh?');
+    if (value == 1 && canCreateSession == true) {
+        canCreateSession = false;
+        console.log('Motion has been detected');
+        createSession();
+    }
+});
 
 async function createSession() {
     let session = opentok.createSession({ mediaMode: "routed" }, function(error, session) {
@@ -61,8 +73,7 @@ async function createSessionEntry(sessionId) {
 //         }
 //     });
 // }
-
-async function startPublish() {
+async function startServer() {
   const port = 3000;
 
   app.use(express.static(__dirname + '/public'));
@@ -88,21 +99,27 @@ async function startPublish() {
     }));
   });
 
-  // app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
   https.createServer({
     key: fs.readFileSync('./key.pem'),
     cert: fs.readFileSync('./cert.pem'),
     passphrase: 'testpass'
   }, app)
   .listen(port);
+}
 
+async function startPublish() {
   const browser = await puppeteer.launch({
     headless: true,
     executablePath: 'chromium-browser',
     ignoreHTTPSErrors: true,
     args: [
       '--ignore-certificate-errors',
-      '--use-fake-ui-for-media-stream'
+      '--use-fake-ui-for-media-stream',
+      '--no-user-gesture-required',
+      '--autoplay-policy=no-user-gesture-required',
+      '--allow-http-screen-capture',
+      '--enable-experimental-web-platform-features',
+      '--auto-select-desktop-capture-source=Entire screen',
     ]
   });
   const page = await browser.newPage();
@@ -112,5 +129,12 @@ async function startPublish() {
 
   await page.goto('https://localhost:3000/serve');
 
-  await page.screenshot({path: 'example.png'});
+  async function closeSession(page, browser) {
+    console.log('delay expired');
+    await page.close();
+    await browser.close();
+  }
+
+  setTimeout(closeSession, 60000, page, browser);
+  setTimeout(() => { canCreateSession = true }, 70000);
 }
