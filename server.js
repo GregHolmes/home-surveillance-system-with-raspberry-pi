@@ -59,7 +59,7 @@ async function connectNgrok() {
     onLogEvent: data => { console.log(data) }
   });
 
-  nexmo.applications.update(process.env.APP_ID, {
+  nexmo.applications.update(process.env.NEXMO_APPLICATION_ID, {
     capabilities: {
       messages: {
         webhooks: {
@@ -72,7 +72,7 @@ async function connectNgrok() {
         }
       }
     }
-  }, callback);
+  });
 }
 
 function sendSMS() {
