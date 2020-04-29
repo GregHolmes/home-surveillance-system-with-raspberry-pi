@@ -59,7 +59,9 @@ async function connectNgrok() {
     onLogEvent: data => { console.log(data) }
   });
 
-  nexmo.applications.update(process.env.NEXMO_APPLICATION_ID, {
+  console.log('url ' + url);
+  console.log('starting to update application');
+  var test = nexmo.applications.update(process.env.NEXMO_APPLICATION_ID, {
     capabilities: {
       messages: {
         webhooks: {
@@ -73,6 +75,8 @@ async function connectNgrok() {
       }
     }
   });
+  console.log('test');
+  console.log('finished updating application');
 }
 
 function sendSMS() {
