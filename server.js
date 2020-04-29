@@ -28,6 +28,7 @@ const nexmo = new Nexmo({
 });
 
 let canCreateSession = true;
+let session = null;
 
 async function startPublish() {
   const browser = await puppeteer.launch({
@@ -57,6 +58,11 @@ async function startPublish() {
     await currentBrowser.close();
 
     // TODO, set session to false in the database.
+    if (session !== null) {
+      session.update({
+        active: false
+      });
+    }
   }
 
   setTimeout(closeSession, 60000, page, browser);
@@ -70,6 +76,8 @@ function createSessionEntry(newSessionId) {
       active: true,
     })
     .then((sessionRow) => {
+      session = sessionRow;
+
       return sessionRow.id;
     });
 }
