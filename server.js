@@ -21,7 +21,9 @@ const opentok = new OpenTok(
 
 const nexmo = new Nexmo({
     apiKey: process.env.NEXMO_API_KEY,
-    apiSecret: process.env.NEXMO_API_SECRET
+    apiSecret: process.env.NEXMO_API_SECRET,
+    applicationId: process.env.NEXMO_APPLICATION_ID,
+    privateKey: process.env.NEXMO_APPLICATION_PRIVATE_KEY_PATH
   })
 
 var canCreateSession = true;
