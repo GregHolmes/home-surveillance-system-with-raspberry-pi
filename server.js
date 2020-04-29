@@ -57,7 +57,6 @@ async function startPublish() {
     await currentPage.close();
     await currentBrowser.close();
 
-    // TODO, set session to false in the database.
     if (session !== null) {
       session.update({
         active: false
@@ -108,7 +107,7 @@ async function createSession() {
     }
 
     createSessionEntry(session.sessionId);
-    // sendSMS();
+    sendSMS();
     startPublish();
 
     return null;
