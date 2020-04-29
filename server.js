@@ -26,20 +26,6 @@ const nexmo = new Nexmo({
 
 var canCreateSession = true;
 
-// Triggers the whole process of creating a session, adding the the session id to the database.
-// Opens a headless mode for the publisher view.
-// Will send a text message.
-startServer();
-
-pir.watch(function(err, value) {
-    if (value == 1 && canCreateSession == true) {
-        canCreateSession = false;
-        console.log('Motion has been detected');
-
-        createSession();
-    }
-});
-
 async function createSession() {
     let session = opentok.createSession({ mediaMode: "routed" }, function(error, session) {
         if (error) {
@@ -54,7 +40,7 @@ async function createSession() {
       });
 }
 
-async function createSessionEntry(sessionId) {
+function createSessionEntry(sessionId) {
     db.Session.create({ sessionId: sessionId, active: true }).then(sessionRow => {
         return sessionRow.id;
       });
@@ -156,8 +142,25 @@ async function startPublish() {
     console.log('Time limit expired. Closing stream');
     await page.close();
     await browser.close();
+
+    // TODO, set session to false in the database.
   }
 
   setTimeout(closeSession, 60000, page, browser);
   setTimeout(() => { canCreateSession = true }, 70000);
 }
+
+
+// Triggers the whole process of creating a session, adding the the session id to the database.
+// Opens a headless mode for the publisher view.
+// Will send a text message.
+startServer();
+
+pir.watch(function(err, value) {
+    if (value == 1 && canCreateSession == true) {
+        canCreateSession = false;
+        console.log('Motion has been detected');
+
+        createSession();
+    }
+});
