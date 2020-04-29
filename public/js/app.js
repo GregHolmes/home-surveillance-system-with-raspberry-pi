@@ -5,8 +5,7 @@ var token;
 var isPublisher = false;
 var isSubscriber = false;
 
-async function getDetails(publisher, subscriber, ipAddress) {
-  const url = "https://" + ipAddress + ":3000/get-details";
+async function getDetails(publisher, subscriber, url) {
   let request = await fetch(url);
   let response = await request.json();
   
