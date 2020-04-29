@@ -66,5 +66,12 @@ async function getDetails(publisher, subscriber, url) {
     isSubscriber = true;
   }
 
+  console.log(fetchUrl());
   setDetails(response);
+}
+
+function fetchUrl() {
+  return fetch('/config/config.txt')
+   .then( r => r.text() )
+   .then( t => console.log(t) )
 }
