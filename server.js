@@ -36,7 +36,7 @@ async function createSession() {
           return null;
         } else {
           createSessionEntry(session.sessionId);
-          sendSMS();
+          // sendSMS();
           startPublish();
         }
       });
@@ -55,9 +55,24 @@ async function connectNgrok() {
     subdomain: 'gregdev',
     region: 'eu',
     configPath: '/home/pi/.ngrok2/ngrok.yml',
-    onStatusChange: status => { console.log(status)},
+    onStatusChange: status => { console.log('Ngrok Status Update: ' + status) },
     onLogEvent: data => { console.log(data) }
   });
+
+  nexmo.applications.update(process.env.APP_ID, {
+    capabilities: {
+      messages: {
+        webhooks: {
+          inbound_url: {
+            address: url + '/webhooks/inbound-message'
+          },
+          status_url: {
+            address: url + '/webhooks/message-status'
+          }
+        }
+      }
+    }
+  }, callback);
 }
 
 function sendSMS() {
