@@ -59,24 +59,30 @@ async function connectNgrok() {
     onLogEvent: data => { console.log(data) }
   });
 
-  console.log('url ' + url);
-  console.log('starting to update application');
-  var test = nexmo.applications.update(process.env.NEXMO_APPLICATION_ID, {
+  nexmo.applications.update(process.env.NEXMO_APPLICATION_ID, {
+    name: process.env.NEXMO_BRAND_NAME,
     capabilities: {
       messages: {
         webhooks: {
           inbound_url: {
-            address: url + '/webhooks/inbound-message'
+            address: url + '/webhooks/inbound-message',
+            http_method: "POST"
           },
           status_url: {
-            address: url + '/webhooks/message-status'
+            address: url + '/webhooks/message-status',
+            http_method: "POST"
           }
         }
       }
     }
+  },
+  (error, result) => {
+    if(error) {
+        console.error(error);
+    } else {
+        console.log(result);
+    }
   });
-  console.log('test');
-  console.log('finished updating application');
 }
 
 function sendSMS() {
