@@ -1,23 +1,49 @@
 // replace these values with those generated in your TokBox Account
-var apiKey;
-var sessionId;
-var token;
-var isPublisher = false;
-var isSubscriber = false;
+let apiKey;
+let sessionId;
+let token;
+let isPublisher = false;
+let isSubscriber = false;
 
-async function getDetails(publisher, subscriber, url) {
-  let request = await fetch(url);
-  let response = await request.json();
-  
-  if (publisher == true) {
-    isPublisher = true;
-  } 
+// Handling all of our errors here by alerting them
+function handleError(error) {
+  if (error) {
+    console.log(error.message);
+  }
+}
 
-  if (subscriber == true) {
-    isSubscriber = true;
+function initializeSession() {
+  const session = OT.initSession(apiKey, sessionId);
+
+  // Subscribe to a newly created stream
+  if (isSubscriber === true) {
+    session.on('streamCreated', (event) => {
+      session.subscribe(event.stream, 'subscriber', {
+        insertMode: 'append',
+        width: '100%',
+        height: '100%',
+      }, handleError);
+    });
   }
 
-  setDetails(response);
+  if (isPublisher === true) {
+    // Create a publisher
+    let publisher = OT.initPublisher('publisher', {
+      insertMode: 'append',
+      width: '100%',
+      height: '100%',
+    }, handleError);
+  }
+
+  // Connect to the session
+  session.connect(token, (error) => {
+    // If the connection is successful, publish to the session
+    if (error) {
+      handleError(error);
+    } else if (isPublisher === true) {
+      session.publish(publisher, handleError);
+    }
+  });
 }
 
 function setDetails(details) {
@@ -28,43 +54,17 @@ function setDetails(details) {
   initializeSession();
 }
 
-function initializeSession() {
-  var session = OT.initSession(apiKey, sessionId);
+async function getDetails(publisher, subscriber, url) {
+  const request = await fetch(url);
+  const response = await request.json();
 
-  // Subscribe to a newly created stream
-  if (isSubscriber == true) {
-    session.on('streamCreated', function(event) {
-      session.subscribe(event.stream, 'subscriber', {
-        insertMode: 'append',
-        width: '100%',
-        height: '100%'
-      }, handleError);
-    });
-  }
-  
-  if (isPublisher == true) {
-    // Create a publisher
-    var publisher = OT.initPublisher('publisher', {
-      insertMode: 'append',
-      width: '100%',
-      height: '100%'
-    }, handleError);
+  if (publisher === true) {
+    isPublisher = true;
   }
 
-  // Connect to the session
-  session.connect(token, function(error) {
-    // If the connection is successful, publish to the session
-    if (error) {
-      handleError(error);
-    } else if (isPublisher == true) {
-      session.publish(publisher, handleError);
-    }
-  });
-}
-
-// Handling all of our errors here by alerting them
-function handleError(error) {
-  if (error) {
-    alert(error.message);
+  if (subscriber === true) {
+    isSubscriber = true;
   }
+
+  setDetails(response);
 }
