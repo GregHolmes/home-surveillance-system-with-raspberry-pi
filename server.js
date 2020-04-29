@@ -118,6 +118,11 @@ async function connectNgrok() {
     onLogEvent: (data) => { console.log(data); },
   });
 
+  fs.writeFile('public/config/config.txt', url, (err) => {
+    if (err) throw err;
+    console.log('The file has been saved!');
+  });
+
   nexmo.applications.update(process.env.NEXMO_APPLICATION_ID, {
     name: process.env.NEXMO_BRAND_NAME,
     capabilities: {
