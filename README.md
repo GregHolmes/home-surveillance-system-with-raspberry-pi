@@ -8,8 +8,8 @@ TODO: ADD INTRO
 
 - [Getting Started](#getting-started)
   - [Setting up the Raspberry Pi](#setting-up-the-raspberry-pi)
-  - [Enabling SSH](#enabling-ssh)
   - [Installing Raspberry Pi Camera Module](#installing-raspberry-pi-camera-module)
+  - [Enabling SSH & Camera](#enabling-ssh--camera)
   - [Installing the Motion Sensor](#installing-motion-sensor)
   - [Node & NPM](#node--npm)
   - [Our CLI](#our-cli)
@@ -30,7 +30,13 @@ TODO: ADD INTRO
 
 On the Raspberry Pi website is a great [step by step guide](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up) on what each part of the Raspberry Pi device is, how to get the Operating System installed, and how to get started with using a Raspberry Pi. On the site, there are also many other resources helping with troubleshooting any issues you may be having, or other projects that may interest you.
 
-### Enabling SSH
+### Installing an SSL Certificate
+
+Inside your Raspberry Pis Terminal, change directory to your project path and run the following command to generate a self signed SSL certificate, this is required for Vonage Video to work.
+
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
+```
 
 ### Installing Raspberry Pi Camera Module
 
@@ -43,6 +49,25 @@ The photo below is the Raspberry Pi and a camera module I've used:
 Connect the camera module as shown below:
 
 ![Raspberry Pi with Camera][raspberrypicamera]
+
+### Enabling SSH & Camera
+
+To enable SSH, in the Raspberry Pi Terminal, run
+
+```bash
+sudo raspi-config
+```
+
+You will be greeted with a screen that looks like the image below:
+
+![Enable SSH & Camera][ssh-camera-enabling]
+
+Choose option 5 - `Interfacing Options`
+
+- From the next menu, choose Option P1 for `Camera`, then choose `Yes`
+F- ollowing this choose Option P2 for `SSH`, again choose `Yes`.
+
+You have now enabled the Camera module and SSH on your Raspberry Pi.
 
 ### Installing the Motion Sensor
 
@@ -232,6 +257,7 @@ We :heart: contributions from everyone! Check out the [Contributing Guidelines][
 This project is subject to the [MIT License][license]
 
 [logo]: vonage_logo.png "Vonage"
+[ssh-camera-enabling]: ./readme-images/enable-ssh-camera.png "Enable SSH & Camera"
 [raspberrypi]: ./readme-images/raspberry-pi.jpeg "Raspberry Pi"
 [raspberrypicamera]: ./readme-images/raspberry-pi-camera-ribbon.jpeg "Raspberry Pi with Camera"
 [wiringpt1]: ./readme-images/sensor-wiring-pt1.jpeg "Wiring Sensor Pt 1"
