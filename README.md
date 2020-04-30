@@ -2,7 +2,9 @@
 
 # Building a Surveillance System With Raspberry Pi and Vonage
 
-TODO: ADD INTRO
+Have you ever wondered how to build your own home surveillance system? Whether this be to monitor your children, monitor vulnerable people in their home, or to be your home security system?
+
+In this tutorial, you get to build a small and cheap home surveillance system using a Raspberry Pi 4 with a Raspberry Pi Camera module and motion sensor. The software side of this will be using Vonage Video Api (formerly TokBox) to publish the stream and Vonage SMS Api to notify the user that motion has been detected.
 
 **Table of Contents**
 
