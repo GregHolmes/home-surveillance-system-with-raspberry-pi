@@ -16,19 +16,20 @@ const db = require('./models/index');
 dotenv.config();
 
 const opentok = new OpenTok(
-  process.env.OPENTOK_API_KEY,
-  process.env.OPENTOK_API_SECRET,
+  process.env.VONAGE_VIDEO_API_KEY,
+  process.env.VONAGE_VIDEO_API_SECRET,
 );
 
 const nexmo = new Nexmo({
-  apiKey: process.env.NEXMO_API_KEY,
-  apiSecret: process.env.NEXMO_API_SECRET,
-  applicationId: process.env.NEXMO_APPLICATION_ID,
-  privateKey: process.env.NEXMO_APPLICATION_PRIVATE_KEY_PATH,
+  apiKey: process.env.VONAGE_API_KEY,
+  apiSecret: process.env.VONAGE_API_SECRET,
+  applicationId: process.env.VONAGE_APPLICATION_ID,
+  privateKey: process.env.VONAGE_APPLICATION_PRIVATE_KEY_PATH,
 });
 
 let canCreateSession = true;
 let session = null;
+let url = null;
 
 async function startPublish() {
   const browser = await puppeteer.launch({
@@ -64,8 +65,8 @@ async function startPublish() {
     }
   }
 
-  setTimeout(closeSession, 60000, page, browser);
-  setTimeout(() => { canCreateSession = true; }, 70000);
+  setTimeout(closeSession, process.env.VIDEO_SESSION_DURATION, page, browser);
+  setTimeout(() => { canCreateSession = true; }, process.env.VIDEO_SESSION_DURATION + 10000);
 }
 
 function createSessionEntry(newSessionId) {
@@ -85,13 +86,13 @@ function sendSMS() {
   const message = {
     content: {
       type: 'text',
-      text: `Motion has been detected on your camera, please view the link here: ${process.env.DOMAIN}`,
+      text: `Motion has been detected on your camera, please view the link here: ${url}/client`,
     },
   };
 
   nexmo.channel.send(
     { type: 'sms', number: process.env.TO_NUMBER },
-    { type: 'sms', number: process.env.NEXMO_BRAND_NAME },
+    { type: 'sms', number: process.env.VONAGE_BRAND_NAME },
     message,
     (err, data) => { console.log(data.message_uuid); },
     { useBasicAuth: true },
@@ -115,7 +116,7 @@ async function createSession() {
 }
 
 async function connectNgrok() {
-  const url = await ngrok.connect({
+  let url = await ngrok.connect({
     proto: 'http',
     addr: 'https://localhost:3000',
     subdomain: 'gregdev',
@@ -130,8 +131,8 @@ async function connectNgrok() {
     console.log('The file has been saved!');
   });
 
-  nexmo.applications.update(process.env.NEXMO_APPLICATION_ID, {
-    name: process.env.NEXMO_BRAND_NAME,
+  nexmo.applications.update(process.env.VONAGE_APPLICATION_ID, {
+    name: process.env.VONAGE_BRAND_NAME,
     capabilities: {
       messages: {
         webhooks: {
@@ -178,7 +179,7 @@ async function startServer() {
     }).then((entries) => res.json({
       sessionId: entries[0].sessionId,
       token: opentok.generateToken(entries[0].sessionId),
-      apiKey: process.env.OPENTOK_API_KEY,
+      apiKey: process.env.VONAGE_VIDEO_API_KEY,
     }));
   });
 

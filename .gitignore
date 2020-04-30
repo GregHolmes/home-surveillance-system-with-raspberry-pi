@@ -3,3 +3,4 @@
 node_modules/
 private.key
 public/config/config.txt
+.DS_Store
