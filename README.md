@@ -9,12 +9,12 @@ TODO: ADD INTRO
 - [Getting Started](#getting-started)
   - [Setting up the Raspberry Pi](#setting-up-the-raspberry-pi)
   - [Enabling SSH](#enabling-ssh)
-  - [Installing Raspberry Pi Camera module](#installing-raspberry-pi-camera-module)
-  - [Installing the motion sensor](#installing-motion-sensor)
+  - [Installing Raspberry Pi Camera Module](#installing-raspberry-pi-camera-module)
+  - [Installing the Motion Sensor](#installing-motion-sensor)
   - [Node & NPM](#node--npm)
   - [Our CLI](#our-cli)
   - [Git (Optional)](#git-optional)
-  - [Install a MySQL Server](#install-a-mysql-server)
+  - [Install a Mysql Server](#install-a-mysql-server)
   - [This Demo Application](#this-demo-application)
   - [Configure the Application](#configure-the-application)
     - [Create an Application](#create-an-application)
@@ -32,7 +32,7 @@ On the Raspberry Pi website is a great [step by step guide](https://projects.ras
 
 ### Enabling SSH
 
-### Installing Raspberry Pi Camera module
+### Installing Raspberry Pi Camera Module
 
 This code is configured to use a Raspberry Pi 4 and official Raspberry Pi Camera module, although other cameras may have no issues being used.
 
@@ -99,7 +99,7 @@ You can use git to clone the [demo application](https://github.com/GregHolmes/pi
 
 Follow this [guide to install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
-### Install a MySQL Server
+### Install a Mysql Server
 
 On the Raspberry Pi, run the following command to install the MySQL database server:
 
