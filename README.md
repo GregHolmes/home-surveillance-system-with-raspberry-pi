@@ -10,7 +10,6 @@ In this tutorial, you get to build a small and cheap home surveillance system us
 
 - [Getting Started](#getting-started)
   - [Setting up the Raspberry Pi](#setting-up-the-raspberry-pi)
-  - [Installing an SSL Certificate](#installing-an-ssl-certificate)
   - [Installing Raspberry Pi Camera Module](#installing-raspberry-pi-camera-module)
   - [Enabling SSH & Camera](#enabling-ssh--camera)
   - [Installing the Motion Sensor](#installing-motion-sensor)
@@ -19,6 +18,7 @@ In this tutorial, you get to build a small and cheap home surveillance system us
   - [Git (Optional)](#git-optional)
   - [Install a Mysql Server](#install-a-mysql-server)
   - [This Demo Application](#this-demo-application)
+  - [Installing an SSL Certificate](#installing-an-ssl-certificate)
   - [Configure the Application](#configure-the-application)
     - [Create an Application](#create-an-application)
   - [Store the Credentials in the Environment](#store-the-credentials-in-the-environment)
@@ -32,14 +32,6 @@ In this tutorial, you get to build a small and cheap home surveillance system us
 ### Raspberry Pi Set up
 
 On the Raspberry Pi website is a great [step by step guide](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up) on what each part of the Raspberry Pi device is, how to get the Operating System installed, and how to get started with using a Raspberry Pi. On the site, there are also many other resources helping with troubleshooting any issues you may be having, or other projects that may interest you.
-
-### Installing an SSL Certificate
-
-Inside your Raspberry Pis Terminal, change directory to your project path and run the following command to generate a self signed SSL certificate, this is required for Vonage Video to work.
-
-```bash
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
-```
 
 ### Installing Raspberry Pi Camera Module
 
@@ -180,6 +172,14 @@ Then, use npm to install the dependencies for the server and client apps.
 
 ```bash
 npm install
+```
+
+### Installing an SSL Certificate
+
+Inside your Raspberry Pis Terminal, change directory to your project path and run the following command to generate a self signed SSL certificate, this is required for Vonage Video to work.
+
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
 ```
 
 ### Configure the Application
