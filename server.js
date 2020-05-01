@@ -65,8 +65,11 @@ async function startPublish() {
     }
   }
 
-  setTimeout(closeSession, process.env.VIDEO_SESSION_DURATION, page, browser);
-  setTimeout(() => { canCreateSession = true; }, process.env.VIDEO_SESSION_DURATION + 10000);
+  let sessionDuration = parseInt(process.env.VIDEO_SESSION_DURATION);
+  let sessionExpiration = sessionDuration + 10000;
+
+  setTimeout(closeSession, sessionDuration, page, browser);
+  setTimeout(() => { canCreateSession = true; }, sessionExpiration);
 }
 
 function createSessionEntry(newSessionId) {
@@ -119,9 +122,11 @@ async function connectNgrok() {
   let url = await ngrok.connect({
     proto: 'http',
     addr: 'https://localhost:3000',
-    subdomain: 'gregdev',
     region: 'eu',
-    configPath: '/home/pi/.ngrok2/ngrok.yml',
+    // The below examples are if you have a paid subscription with Ngrok where you can specify which subdomain to use
+    // And add the location of your configPath. For me, it was gregdev which results in https://gregdev.eu.ngrok.io, a reserved subdomain
+    // subdomain: 'gregdev',
+    // configPath: '/home/pi/.ngrok2/ngrok.yml',
     onStatusChange: (status) => { console.log(`Ngrok Status Update:${status}`); },
     onLogEvent: (data) => { console.log(data); },
   });

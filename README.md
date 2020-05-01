@@ -19,9 +19,11 @@ In this tutorial, you get to build a small and cheap home surveillance system us
   - [Install a Mysql Server](#install-a-mysql-server)
   - [This Demo Application](#this-demo-application)
   - [Installing an SSL Certificate](#installing-an-ssl-certificate)
+  - [Install Ngrok](#install-ngrok)
   - [Configure the Application](#configure-the-application)
     - [Create an Application](#create-an-application)
   - [Store the Credentials in the Environment](#store-the-credentials-in-the-environment)
+  - [Run all Database Migrations](#run-all-database-migrations)
   - [Start the App](#start-the-app-locally)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
@@ -60,7 +62,7 @@ You will be greeted with a screen that looks like the image below:
 Choose option 5 - `Interfacing Options`
 
 - From the next menu, choose Option P1 for `Camera`, then choose `Yes`
-F- ollowing this choose Option P2 for `SSH`, again choose `Yes`.
+- Following this choose Option P2 for `SSH`, again choose `Yes`.
 
 You have now enabled the Camera module and SSH on your Raspberry Pi.
 
@@ -136,16 +138,14 @@ sudo mysql_secure_installation
 Now the `root` user's password is set, it's time to create a database and user to access that database. Connect to the MySQL server:
 
 ```bash
-mysql -u root -p
+sudo mysql -u root -p
 ```
 
 ```sql
--- Creates the database with the name pi-cam
-CREATE DATABASE pi-cam;
--- Creates a new database user "cam-user" with a password "securemypass"
-CREATE USER 'cam-user'@'localhost' IDENTIFIED BY 'securemypass';
--- Grants "cam-user" all privileges to "pi-cam"
-GRANT ALL PRIVILEGES ON pi-cam.* TO 'cam-user'@'localhost';
+-- Creates the database with the name picam
+CREATE DATABASE picam;
+-- Creates a new database user "camuser" with a password "securemypass" and grants them access to picam
+GRANT ALL PRIVILEGES ON picam.* TO `camuser`@localhost IDENTIFIED BY "securemypass";
 -- Flushes these updates to the database
 FLUSH PRIVILEGES;
 ```
@@ -159,13 +159,13 @@ Clone or download the demo application. To download, [go to the repository](http
 > ***Note:*** If you download, make sure you're on the right version number before downloading.
 
 ```bash
-git clone git@github.com:GregHolmes/pi-cam.git
+git clone git@github.com:GregHolmes/home-surveillance-system-with-raspberry-pi.git
 ```
 
 Once unzipped or cloned, change into the directory.
 
 ```bash
-cd pi-cam
+cd home-surveillance-system-with-raspberry-pi-master/
 ```
 
 Then, use npm to install the dependencies for the server and client apps.
@@ -182,9 +182,21 @@ Inside your Raspberry Pis Terminal, change directory to your project path and ru
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
 ```
 
+### Install Ngrok
+
+Ngrok allows users to expose their webserver running on a local machine to the Internet without needing to configure their router or expose their IP address. To install Ngrok, inside the project directory run:
+
+```bash
+npm install ngrok
+```
+
 ### Configure the Application
 
 Using our CLI, set up the service and configure the app with credentials to begin.
+
+```bash
+nexmo setup <api_key> <api_secret>
+```
 
 #### Create an Application
 
@@ -234,6 +246,14 @@ DB_PORT=3306
 
 #Duration for video session on motion detection (In milliseconds)
 VIDEO_SESSION_DURATION=
+```
+
+### Run all Database Migrations
+
+There are generated migrations within the `migrations/` table. Running the command below creates the specified database tables into the database.
+
+```
+npx sequelize db:migrate 
 ```
 
 ### Start the App
