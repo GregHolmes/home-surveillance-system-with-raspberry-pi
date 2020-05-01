@@ -10,6 +10,7 @@ In this tutorial, you get to build a small and cheap home surveillance system us
 
 - [Getting Started](#getting-started)
   - [Setting up the Raspberry Pi](#setting-up-the-raspberry-pi)
+  - [Installing an SSL Certificate](#installing-an-ssl-certificate)
   - [Installing Raspberry Pi Camera Module](#installing-raspberry-pi-camera-module)
   - [Enabling SSH & Camera](#enabling-ssh--camera)
   - [Installing the Motion Sensor](#installing-motion-sensor)
