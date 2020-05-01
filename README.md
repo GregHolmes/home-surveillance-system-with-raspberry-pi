@@ -33,7 +33,7 @@ In this tutorial, you get to build a small and cheap home surveillance system us
 
 On the Raspberry Pi website is a great [step by step guide](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up) on what each part of the Raspberry Pi device is, how to get the Operating System installed, and how to get started with using a Raspberry Pi. On the site, there are also many other resources helping with troubleshooting any issues you may be having, or other projects that may interest you.
 
-### Installing an SSL Certificate
+### Installing an SSL Certificate
 
 Inside your Raspberry Pis Terminal, change directory to your project path and run the following command to generate a self signed SSL certificate, this is required for Vonage Video to work.
 
